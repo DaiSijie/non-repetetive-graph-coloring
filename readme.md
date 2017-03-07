@@ -7,23 +7,24 @@ This repository will contain all the Python code that I'm writting for my semest
 Below you will find a description of each executable piece of code which. When a program requires a graph file, it uses the encoding provided by **EasyGraph** which you can find in one of my other repository.
 
 
-##GeneralNRGC.py
-**Usage**: python GeneralNRGC.py graphfile
-**Requirements**: Gurobi, networkx
+##generalNRGC.py
+**Description**: This program computes the Thue number of any graph. Note that it may take quite a long time.
 
-Requires networkx
+**Usage**: `python GeneralNRGC.py graphfile`
 
-####
-PathNRGC.py
+**Requirements**: Gurobi, Networkx
 
-Usage: python PathNRGC.py l
-Where l is the length of the path
 
-####
-multigrids
+##pathNRGC.py
+**Description**: This program computes the Thue number of a path of length l. Note that the number of colors used should always be 3.
 
-Usage: python multigrids.py n lim
-We define a multigrid as the grid of size n x n where every row and column is a clique of size n. lim represents the maximal size of paths considered. Putting a small lim will make the programm run faster but will only provide a lower bound on pi(M_4).
+**Usage**: `python PathNRGC.py l`
 
-####
+**Requirements**: Gurobi
 
+##multigridNRGC.py
+**Description**: The multigrid of dimension n is a grid of size n x n where every row and column is also a clique of size n. This program computes the minimum number of color to provide a proper non-repetitive coloring by only considering paths up to length lim. If you want to consider all paths, put lim = n^2.
+
+**Usage**: `python multigrids.py n lim`
+
+**Requirements**: Gurobi
