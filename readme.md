@@ -31,3 +31,4 @@ Below you will find a description of each executable piece of code which. When a
 
 ##About
 Author: Gilbert Maystre
+Supervisor: Manuel Aprile
