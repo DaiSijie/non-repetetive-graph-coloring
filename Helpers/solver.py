@@ -15,6 +15,8 @@ def solve(size, number_of_colors, paths):
       X_c.append(m.addVar(vtype = GRB.BINARY, name = "X_" + str(c) + "_" + str(v)))
     X.append(X_c)
 
+  print "size of X:"+str(len(X))
+
   for i in xrange(size):
     ins = []
     for j in xrange(size):
@@ -66,15 +68,18 @@ def getZFor(Z, v1, v2):
   return Z[min(v1, v2)][max(v1,v2)]
 
 def parseSolution(Y, X):
+
+  print "parsing solution..."+str(len(Y))
+
   nOfColors = 0
   for y in Y:
     nOfColors += y.X
 
-  assignment = [] #at position i lies the color vertex i must take
-  for v in xrange(len(X)):
-    for c in xrange(len(X)):
+  assignment = [0]*len(X[0]) #at position i lies the color vertex i must take
+  for c in xrange(len(X)):
+    for v in xrange(len(X[c])):
       if X[c][v].X > 0.0:
-        assignment.append(c)
+        assignment[v] = c
 
   #Now we rename colors in a two-pass fashion
   C = set()
