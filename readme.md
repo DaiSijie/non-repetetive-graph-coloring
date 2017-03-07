@@ -1,3 +1,8 @@
+#Quick guide
+
+Non-repetitive graph coloring is a generalisation of regular graph coloring. In this setting, we require all simple path of even length to be square-free. We say that a sequence is a square if it is of the form xx where x is any sequence of color.
+
+
 This repository contains all the code that I'm writing to test hypotheses for my project on non-repetitive graph coloring.
 You will need a working license of Gurobi to run the code
 
