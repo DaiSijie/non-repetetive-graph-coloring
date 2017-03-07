@@ -1,10 +1,9 @@
 #Quick guide
 
-Non-repetitive graph coloring is a generalisation of regular graph coloring. In this setting, we require all simple path of even length to be square-free. We say that a sequence is a square if it is of the form xx where x is any sequence of color.
+Non-repetitive graph coloring is a generalization of regular graph coloring. In this setting, we require all simple path of even length to be square-free. We say that a sequence is a square if it is of the form xx where x is any sequence of color. We denote by π(G) (Thue number) the minimum number of colors required to produce a proper non-repetitive graph coloring for G.
 
+This repository will contain all the Python code that I'm writting for my semester project at EPFL for the DISOPT lab. It mainly contains small snippets to test hypotheses. Since this problem is very hard (it lies in CO-NP), the problem is translated to an integer program and you will need a working copy of Gurobi (an L/IP solver) to execute the code. 
 
-This repository contains all the code that I'm writing to test hypotheses for my project on non-repetitive graph coloring.
-You will need a working license of Gurobi to run the code
 
 #####
 GeneralNRGC.py
