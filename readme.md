@@ -1,4 +1,4 @@
-#Introduction
+##Introduction
 
 Non-repetitive graph coloring is a generalization of regular graph coloring. In this setting, we require all simple path of even length to be square-free. We say that a sequence is a square if it is of the form xx where x is any sequence of color. We denote by π(G) (Thue number) the minimum number of colors required to produce a proper non-repetitive graph coloring for G.
 
@@ -28,3 +28,6 @@ Below you will find a description of each executable piece of code which. When a
 **Usage**: `python multigrids.py n lim`
 
 **Requirements**: Gurobi
+
+##About
+Author: Gilbert Maystre
