@@ -8,7 +8,7 @@ Below you will find a description of each executable piece of code which. When a
 
 
 ##generalNRGC.py
-**Description**: This program computes the Thue number of any graph. Note that it may take quite a long time.
+**Description**: This program computes the Thue number of any graph and also yields the proper coloring. Note that it may take quite a long time.
 
 **Usage**: `python GeneralNRGC.py graphfile`
 
@@ -16,14 +16,14 @@ Below you will find a description of each executable piece of code which. When a
 
 
 ##pathNRGC.py
-**Description**: This program computes the Thue number of a path of length l. Note that the number of colors used should always be 3.
+**Description**: This program computes the Thue number of a path of length `l` and also yields the proper coloring. Note that due to Thue, the number of colors used should always be 3.
 
 **Usage**: `python PathNRGC.py l`
 
 **Requirements**: Gurobi
 
 ##multigridNRGC.py
-**Description**: The multigrid of dimension n is a grid of size n x n where every row and column is also a clique of size n. This program computes the minimum number of color to provide a proper non-repetitive coloring by only considering paths up to length lim. If you want to consider all paths, put lim = n^2.
+**Description**: The multigrid of dimension `n` is a grid of size `n` x `n` where every row and column is also a clique of size `n`. This program computes the minimum number of color to provide a proper non-repetitive coloring by only considering paths up to length `lim`. If you want to consider all paths, put `lim` = `n`^2.
 
 **Usage**: `python multigrids.py n lim`
 
@@ -31,4 +31,5 @@ Below you will find a description of each executable piece of code which. When a
 
 ##About
 Author: Gilbert Maystre
+
 Supervisor: Manuel Aprile
