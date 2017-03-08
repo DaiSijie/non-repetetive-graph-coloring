@@ -22,7 +22,7 @@ def allPaths2(n, E):
   return paths
 
 
-def allPaths(n, E):
+def allPaths1(n, E):
 	paths = []
 	for v1 in xrange(n):
 		for v2 in xrange(v1 + 1, n):

@@ -1,19 +1,24 @@
 import os, sys, inspect
 import Queue
 import copy
+from time import time
+
+
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
 from helpers.solver import solve
+from helpers.solver import solveForEdges
 from helpers.paths import allPaths2
+from helpers.paths import allPaths1
 from gurobipy import *
 
+#Comment: this method is approximatively two times faster than networkx and ten times faster than the naive
 def allPaths(size, E):
   toReturn = []
-  for s in xrange(size):
-    print "starting at: "+str(s)
+  for s in xrange(size - 1): #Last vertex will have been covered by everything
     toReturn.extend(allPathsFromS(size, E, s))
   return toReturn
 
@@ -24,15 +29,14 @@ def allPathsFromS(size, E, s):
   toVisit = Queue.Queue()
   toVisit.put((s, [s]))
   while not toVisit.empty():
-    print "While called! : toVisit size:::" + str(toVisit.qsize())
     (visiting, how) = toVisit.get()
     visited.add(visiting)
     for n in xrange(size):
       if n not in visited and {visiting, n} in E:
-        nhow = copy.deepcopy(how)
+        nhow = list(how)
         nhow.append(n)
         toVisit.put((n, nhow))
-        if s < n:
+        if s < n and len(nhow) % 2 == 0:
           toReturn.append(nhow)
   return toReturn
 
@@ -81,6 +85,17 @@ def displayResults(n, assignment):
 
   print "============================="
 
+def displayEdgeResults(n, assignment, backwardMap):
+  print "\n========== RESULTS =========="
+  
+  print "Number of colors used: " + str(int(n))
+  
+  for ((a,b), c) in assignment:
+    print "Edge (" + str(backwardMap.get(a)) + ", " + str(backwardMap.get(b)) + "): " + str(c)
+
+  print "============================="
+
+
 def verifyConjecture(rawInput, n):
   paths = Paths.allPaths(n, fromTreeFlow(rawInput))
   displayResults(*Solver.solve(n, n, paths))
@@ -92,12 +107,31 @@ if __name__ == '__main__':
   else:
     f = open(sys.argv[1])
     (size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
-    paths = allPaths(size, E)
-    print "number of vertices: "+str(size)
-    print "number of paths: "+str(len(paths))
-    for p in paths:
-      pp = map(lambda x: backwardMap.get(x), p)
-      print pp
+    (n, ass) = solveForEdges(E, len(E), allPaths2(size, E))
+    displayEdgeResults(n, ass, backwardMap)
+
+
+    #t1 = time()
+    #paths = allPaths(size, E)
+    #t2 = time()
+    #paths2 = filter(lambda x: len(x) % 2 == 0, allPaths2(size, E))
+    #t3 = time()
+    #paths3 = filter(lambda x: len(x) % 2 == 0, allPaths1(size, E))
+    #t4 = time()
+
+    #print "time with optimized: " + str(t2-t1)
+    #print "time with networkx: " + str(t3-t2)
+    #print "time with naive: " + str(t4 - t3)
+    #print "paths found with optimized: " + str(len(paths))
+    #print "paths found with networkx: " + str(len(paths2))
+    #print "paths found with naive: " + str(len(paths3))
+
+
+    #print "number of vertices: "+str(size)
+    #print "number of paths: "+str(len(paths))
+    #for p in paths:
+    #  pp = map(lambda x: backwardMap.get(x), p)
+    #  print pp
 
 
 

@@ -1,5 +1,43 @@
 from gurobipy import *
 
+def solveForEdges(E, number_of_colors, paths):
+  #Apply conversion
+  (size, fwdmap, bckmap) = conversion(E)
+  paths = filter(lambda path: len(path) % 2 == 1 and len(path) > 1, paths)
+  paths = map(lambda path: translate(path, fwdmap), paths)
+
+  #Actually solve it
+  (ncolrs, assignment) = solve(size, number_of_colors, paths)
+
+  #Resolve assignment
+  ass = []
+  for i in xrange(size):
+    ass.append((bckmap[i], assignment[i]))
+
+  return (ncolrs, ass)
+
+def conversion(E):
+  counter = 0
+  fwdmap = dict()
+  bckmap = dict()
+  for e in E:
+    l = list(e)
+    a = max(l[0], l[1])
+    b = min(l[0], l[1])
+    fwdmap[(a, b)] = counter
+    bckmap[counter] = (a, b)
+    counter = counter + 1
+  return (counter, fwdmap, bckmap)
+
+def translate(path, fwdmap):
+  l = len(path)
+  for i in xrange(l-1):
+    a = max(path[i], path[i + 1])
+    b = min(path[i], path[i + 1])
+    path[i] = fwdmap[(a, b)]
+  del path[l-1]
+  return path
+
 def solve(size, number_of_colors, paths):
 
   m = Model()
