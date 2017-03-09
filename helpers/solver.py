@@ -6,9 +6,6 @@ def solveForEdges(E, number_of_colors, paths):
   paths = filter(lambda path: len(path) % 2 == 1 and len(path) > 1, paths)
   paths = map(lambda path: translate(path, fwdmap), paths)
 
-
-  print "HEY????" + str(type(paths[0]))
-
   #Actually solve it
   (feasible, nOfColors, assignment) = solve(size, number_of_colors, paths)
 
@@ -45,7 +42,7 @@ def translate(path, fwdmap):
 def solve(size, number_of_colors, paths):
   m = Model()
 
-  m.getEnv().set(GRB_IntParam_OutputFlag, 0);
+  m.setParam( 'OutputFlag', False )
 
   Y = [] #Y_color
   X = [] #X_color_vertex
@@ -95,7 +92,6 @@ def solve(size, number_of_colors, paths):
     length = len(path)
     constraints = []
     for i in xrange(length/2):
-      print "HEY: "+ str(type(path))
       constraints.append(getZFor(Z, path[i], path[i + length/2]))
     m.addConstr(quicksum(constraints[i] for i in xrange(len(constraints))), GRB.LESS_EQUAL, length - 1)
 

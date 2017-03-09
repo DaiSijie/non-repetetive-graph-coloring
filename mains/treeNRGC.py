@@ -1,7 +1,5 @@
 import os, sys, inspect
 import Queue
-import copy
-from time import time
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -76,60 +74,45 @@ def verifyConjecture(rawInput, size):
   #compute the thue index of T
   (feasible, n, ass) = solveForEdges(E, len(E), treePaths(size, E)) #ToDo: improve lower bound for the number of colors
 
-  print "-----FIRST PART DONE---"
-
-
   #try to color the line graph with n + 1 colors
   (sizel, El) = lineGraph(size, E)
   (feasible2, n2, ass2) = solve(sizel, n + 1, allPaths(sizel, El))
 
-  print "Conjecture holds: "+str(feasible2)
+  return feasible2
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:
-    print "Usage: \"python TreeNRGC.py treeFile\""
+    print "Usage: \"python treeNRGC.py folername\""
   else:
-    lines = [line.rstrip('\n') for line in open(sys.argv[1])]
-    for l in lines:
-       verifyConjecture(l, 4)
+    folderName = sys.argv[1]
+    globaly = True
+    for name in os.listdir(folderName):
+      
+      #retrieve info of file
+      path = folderName + "/" + name
+      name = name[4:]
+      name = name[:len(name) - 4]
+      name = name.split(".")
+      size = int(name[0])
+      radius = int(name[1])
 
+      lines = [line.rstrip('\n') for line in open(path)]
+      
+      holds = True
+      counter = 1
+      for l in lines:
+        sys.stdout.write("\rTesting tree of size " + str(size) + " and radius " + str(radius) + ": " + str(counter) + "/" + str(len(lines)))
+        sys.stdout.flush()
+        holds = holds and verifyConjecture(l, size)
+        counter = counter + 1
 
+      sys.stdout.write("\rTesting tree of size " + str(size) + " and radius " + str(radius) + ": conjecture is " + str(holds))
+      sys.stdout.flush()
+      print ""
 
+      globaly = globaly and holds
 
-    #f = open(sys.argv[1])
-    #(size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
-    #(n, ass) = solveForEdges(E, len(E), allPaths2(size, E))
-    #displayEdgeResults(n, ass, backwardMap)
-
-    #(nn, EE) = lineGraph(size, E)
-    #print "nn = "+str(nn)
-    #print EE
-
-    #t1 = time()
-    #paths = allPaths(size, E)
-    #t2 = time()
-    #paths2 = filter(lambda x: len(x) % 2 == 0, allPaths2(size, E))
-    #t3 = time()
-    #paths3 = filter(lambda x: len(x) % 2 == 0, allPaths1(size, E))
-    #t4 = time()
-
-    #print "time with optimized: " + str(t2-t1)
-    #print "time with networkx: " + str(t3-t2)
-    #print "time with naive: " + str(t4 - t3)
-    #print "paths found with optimized: " + str(len(paths))
-    #print "paths found with networkx: " + str(len(paths2))
-    #print "paths found with naive: " + str(len(paths3))
-
-
-    #print "number of vertices: "+str(size)
-    #print "number of paths: "+str(len(paths))
-    #for p in paths:
-    #  pp = map(lambda x: backwardMap.get(x), p)
-    #  print pp
-
-
-
-    #lines = [line.rstrip('\n') for line in open(sys.argv[1])]
-    #for l in lines:
-    #   verifyConjecture(l, 7)
+    print "============ RESULTS ============"
+    print "Conjecture holds: " + str(globaly)
+    print "================================="
 
