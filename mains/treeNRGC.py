@@ -40,6 +40,27 @@ def allPathsFromS(size, E, s):
           toReturn.append(nhow)
   return toReturn
 
+def lineGraph(size, E):
+  #First, we convert each edge to a number
+  counter = 0
+  bckmap = dict()
+  for e in E:
+    l = list(e)
+    a = max(l[0], l[1])
+    b = min(l[0], l[1])
+    bckmap[counter] = (a, b)
+    counter = counter + 1
+
+  #Now, we build the new edge set:
+  Ep = set()
+  for i in xrange(counter):
+    for j in xrange(i + 1, counter):
+      (a1, a2) = bckmap[i]
+      (b1, b2) = bckmap[j]
+      if a1 == b1 or a1 == b2 or a2 == b1 or a2 == b2:
+        Ep.add(frozenset([i, j]))
+
+  return (counter, Ep)
 
 def fromTreeFlow(rawInput):
   edgeList = rawInput.split("  ")
@@ -91,7 +112,7 @@ def displayEdgeResults(n, assignment, backwardMap):
   print "Number of colors used: " + str(int(n))
   
   for ((a,b), c) in assignment:
-    print "Edge (" + str(backwardMap.get(a)) + ", " + str(backwardMap.get(b)) + "): " + str(c)
+    print "Edge {" + str(backwardMap.get(a)) + ", " + str(backwardMap.get(b)) + "}: " + str(c)
 
   print "============================="
 
@@ -110,6 +131,9 @@ if __name__ == '__main__':
     (n, ass) = solveForEdges(E, len(E), allPaths2(size, E))
     displayEdgeResults(n, ass, backwardMap)
 
+    (nn, EE) = lineGraph(size, E)
+    print "nn = "+str(nn)
+    print EE
 
     #t1 = time()
     #paths = allPaths(size, E)
