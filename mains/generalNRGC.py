@@ -8,13 +8,15 @@ from helpers.solver import solve
 from helpers.paths import allPaths2
 from gurobipy import *
 
-def displayResults(n, assignment, backwardMap):
+def displayResults(feasible, nOfColors, assignment, backwardMap):
   print "\n========== RESULTS =========="
   
-  print "Number of colors used: " + str(int(n))
-  
-  for v in xrange(len(assignment)):
-    print "Vertex "+str(backwardMap.get(v))+": "+str(assignment[v])
+  if not feasible:
+    print "Model is infeasible"
+  else:
+    print "Number of colors used: " + str(nOfColors)
+    for v in xrange(len(assignment)):
+      print "Vertex "+str(backwardMap.get(v))+": "+str(assignment[v])
 
   print "============================="
 
@@ -70,15 +72,6 @@ if __name__ == '__main__':
   else:
     f = open(sys.argv[1])
     (size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
+    (feasible, colors, assignment) = solve(size, 1, allPaths2(size, E))
+    displayResults(feasible, colors, assignment, backwardMap)
 
-    print size
-    paths = allPaths2(size, E)
-    print len(paths)
-
-
-    (colors, assignment) = solve(size, 8, paths)
-
-    print "hey: "+str(len(assignment))
-
-
-    displayResults(colors, assignment, backwardMap)

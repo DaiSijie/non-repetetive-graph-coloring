@@ -100,12 +100,16 @@ def solve(size, number_of_colors, paths):
   m.setObjective(quicksum(y for y in Y), GRB.MINIMIZE)
   m.optimize()
 
-  return parseSolution(Y, X)
+  if m.status == GRB.Status.INFEASIBLE:
+    return (False, 0, [])
+  else:
+    return parseSolution(Y, X)
 
 def getZFor(Z, v1, v2):
   return Z[min(v1, v2)][max(v1,v2)]
 
 def parseSolution(Y, X):
+
 
   print "parsing solution..."+str(len(Y))
 

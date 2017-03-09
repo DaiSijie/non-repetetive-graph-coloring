@@ -16,14 +16,14 @@ from helpers.paths import allPaths1
 from gurobipy import *
 
 #Comment: this method is approximatively two times faster than networkx and ten times faster than the naive
-def allPaths(size, E):
+def treePaths(size, E):
   toReturn = []
   for s in xrange(size - 1): #Last vertex will have been covered by everything
-    toReturn.extend(allPathsFromS(size, E, s))
+    toReturn.extend(treePathsFromS(size, E, s))
   return toReturn
 
 ##Should only returns paths to vertex > s
-def allPathsFromS(size, E, s):
+def treePathsFromS(size, E, s):
   toReturn = []
   visited = set()
   toVisit = Queue.Queue()
@@ -36,7 +36,7 @@ def allPathsFromS(size, E, s):
         nhow = list(how)
         nhow.append(n)
         toVisit.put((n, nhow))
-        if s < n and len(nhow) % 2 == 0:
+        if s < n and len(nhow) % 2 == 1:
           toReturn.append(nhow)
   return toReturn
 
@@ -117,7 +117,19 @@ def displayEdgeResults(n, assignment, backwardMap):
   print "============================="
 
 
-def verifyConjecture(rawInput, n):
+def verifyConjecture(rawInput, size):
+  E = fromTreeFlow(rawInput)
+
+  #compute the thue index of T
+  (n, ass) = solveForEdges(E, len(E), treePaths(size, E))
+
+  #try to color the line graph with n + 1 colors
+  (sizel, El) = lineGraph(size, E)
+  (n2, ass2) = solve(sizel, n + 1, El)
+
+
+
+
   paths = Paths.allPaths(n, fromTreeFlow(rawInput))
   displayResults(*Solver.solve(n, n, paths))
 
