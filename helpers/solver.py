@@ -40,6 +40,8 @@ def translate(path, fwdmap):
   return path
 
 def solve(size, number_of_colors, paths):
+  paths = filter(lambda p: len(p) % 2 == 0, paths)
+
   m = Model()
 
   m.setParam( 'OutputFlag', False )
