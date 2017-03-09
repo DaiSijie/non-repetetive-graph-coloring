@@ -5,6 +5,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
 from helpers.solver import solve
+from helpers.solver import solveForEdges
 from helpers.paths import allPaths
 from gurobipy import *
 
@@ -60,5 +61,10 @@ if __name__ == '__main__':
   else:
     f = open(sys.argv[1])
     (size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
-    (feasible, colors, assignment) = solve(size, size, allPaths(size, E))
-    displayResults(feasible, colors, assignment, backwardMap)
+    if len(sys.argv) == 3:
+      (feasible, n, ass) = solveForEdges(E, len(E), allPaths(size, E)) #ToDo: improve lower bound for the number of colors
+      displayEdgeResults(n, ass, backwardMap)
+    else:
+      (feasible, colors, assignment) = solve(size, size, allPaths(size, E))
+      displayResults(feasible, colors, assignment, backwardMap)
+
