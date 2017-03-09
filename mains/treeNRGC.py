@@ -3,16 +3,13 @@ import Queue
 import copy
 from time import time
 
-
-
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
 from helpers.solver import solve
 from helpers.solver import solveForEdges
-from helpers.paths import allPaths2
-from helpers.paths import allPaths1
+from helpers.paths import allPaths
 from gurobipy import *
 
 #Comment: this method is approximatively two times faster than networkx and ten times faster than the naive
@@ -22,7 +19,7 @@ def treePaths(size, E):
     toReturn.extend(treePathsFromS(size, E, s))
   return toReturn
 
-##Should only returns paths to vertex > s
+#Should only returns paths to vertex > s
 def treePathsFromS(size, E, s):
   toReturn = []
   visited = set()
@@ -42,25 +39,25 @@ def treePathsFromS(size, E, s):
 
 def lineGraph(size, E):
   #First, we convert each edge to a number
-  counter = 0
+  sizel = 0
   bckmap = dict()
   for e in E:
     l = list(e)
     a = max(l[0], l[1])
     b = min(l[0], l[1])
-    bckmap[counter] = (a, b)
-    counter = counter + 1
+    bckmap[sizel] = (a, b)
+    sizel = sizel + 1
 
   #Now, we build the new edge set:
-  Ep = set()
-  for i in xrange(counter):
-    for j in xrange(i + 1, counter):
+  El = set()
+  for i in xrange(sizel):
+    for j in xrange(i + 1, sizel):
       (a1, a2) = bckmap[i]
       (b1, b2) = bckmap[j]
       if a1 == b1 or a1 == b2 or a2 == b1 or a2 == b2:
-        Ep.add(frozenset([i, j]))
+        El.add(frozenset([i, j]))
 
-  return (counter, Ep)
+  return (sizel, El)
 
 def fromTreeFlow(rawInput):
   edgeList = rawInput.split("  ")
@@ -73,79 +70,40 @@ def fromTreeFlow(rawInput):
 
   return E
 
-def fromEasyGraphFlow(rawInput):
-  parts = rawInput.split(":")
-  vertexList = parts[1].split(";")
-  edgeList = parts[2].split(";")
-
-  forwardMap = dict()
-  backwardMap = dict()
-  counter = 0
-  for v in vertexList:
-    forwardMap[v] = counter
-    backwardMap[counter]  = v
-    counter = counter + 1
-
-  E = set()
-  for e in edgeList:
-    v1 = e.split(",")[0]
-    v2 = e.split(",")[1]
-    E.add(frozenset([forwardMap.get(v1), forwardMap.get(v2)]))
-
-  size = len(vertexList)
-
-  return (size, E, forwardMap, backwardMap)
-
-def displayResults(n, assignment):
-  print "\n========== RESULTS =========="
-  
-  print "Number of colors used: " + str(int(n))
-  
-  for v in xrange(len(assignment)):
-    print "Vertex "+str(v)+": "+str(assignment[v])
-
-  print "============================="
-
-def displayEdgeResults(n, assignment, backwardMap):
-  print "\n========== RESULTS =========="
-  
-  print "Number of colors used: " + str(int(n))
-  
-  for ((a,b), c) in assignment:
-    print "Edge {" + str(backwardMap.get(a)) + ", " + str(backwardMap.get(b)) + "}: " + str(c)
-
-  print "============================="
-
-
 def verifyConjecture(rawInput, size):
   E = fromTreeFlow(rawInput)
 
   #compute the thue index of T
-  (n, ass) = solveForEdges(E, len(E), treePaths(size, E))
+  (feasible, n, ass) = solveForEdges(E, len(E), treePaths(size, E)) #ToDo: improve lower bound for the number of colors
+
+  print "-----FIRST PART DONE---"
+
 
   #try to color the line graph with n + 1 colors
   (sizel, El) = lineGraph(size, E)
-  (n2, ass2) = solve(sizel, n + 1, El)
+  (feasible2, n2, ass2) = solve(sizel, n + 1, allPaths(sizel, El))
 
-
-
-
-  paths = Paths.allPaths(n, fromTreeFlow(rawInput))
-  displayResults(*Solver.solve(n, n, paths))
-
+  print "Conjecture holds: "+str(feasible2)
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:
     print "Usage: \"python TreeNRGC.py treeFile\""
   else:
-    f = open(sys.argv[1])
-    (size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
-    (n, ass) = solveForEdges(E, len(E), allPaths2(size, E))
-    displayEdgeResults(n, ass, backwardMap)
+    lines = [line.rstrip('\n') for line in open(sys.argv[1])]
+    for l in lines:
+       verifyConjecture(l, 4)
 
-    (nn, EE) = lineGraph(size, E)
-    print "nn = "+str(nn)
-    print EE
+
+
+
+    #f = open(sys.argv[1])
+    #(size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
+    #(n, ass) = solveForEdges(E, len(E), allPaths2(size, E))
+    #displayEdgeResults(n, ass, backwardMap)
+
+    #(nn, EE) = lineGraph(size, E)
+    #print "nn = "+str(nn)
+    #print EE
 
     #t1 = time()
     #paths = allPaths(size, E)

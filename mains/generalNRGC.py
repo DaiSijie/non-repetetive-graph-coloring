@@ -5,8 +5,19 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
 from helpers.solver import solve
-from helpers.paths import allPaths2
+from helpers.paths import allPaths
 from gurobipy import *
+
+def displayEdgeResults(n, assignment, backwardMap):
+  print "\n========== RESULTS =========="
+  
+  print "Number of colors used: " + str(int(n))
+  
+  for ((a,b), c) in assignment:
+    print "Edge {" + str(backwardMap.get(a)) + ", " + str(backwardMap.get(b)) + "}: " + str(c)
+
+  print "============================="
+
 
 def displayResults(feasible, nOfColors, assignment, backwardMap):
   print "\n========== RESULTS =========="
@@ -19,7 +30,6 @@ def displayResults(feasible, nOfColors, assignment, backwardMap):
       print "Vertex "+str(backwardMap.get(v))+": "+str(assignment[v])
 
   print "============================="
-
 
 def fromEasyGraphFlow(rawInput):
   parts = rawInput.split(":")
@@ -44,34 +54,11 @@ def fromEasyGraphFlow(rawInput):
 
   return (size, E, forwardMap, backwardMap)
 
-
-def construct(n):
-  E = set()
-
-  nvertices = n * n
-  for i in xrange(n):
-    for j in xrange(n):
-      for k in xrange(j+1, n):
-        E.add(frozenset([n * i + j, n * i + k]))
-
-  for j in xrange(n):
-    for i in xrange(n):
-      for k in xrange(i + 1, n):
-        E.add(frozenset([i * n + j, k * n + j]))
-
-  return n
-
-
-
-
-
-
 if __name__ == '__main__':
   if len(sys.argv) < 2:
     print "Usage: \"python generalNRGC.py graphFile\""
   else:
     f = open(sys.argv[1])
     (size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
-    (feasible, colors, assignment) = solve(size, 1, allPaths2(size, E))
+    (feasible, colors, assignment) = solve(size, size, allPaths(size, E))
     displayResults(feasible, colors, assignment, backwardMap)
-
