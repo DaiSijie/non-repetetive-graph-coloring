@@ -7,7 +7,7 @@ sys.path.insert(0, parentdir)
 from helpers.solver import solve
 from gurobipy import *
 
-def displayResults(n, assignment):
+def displayResults(feasible, n, assignment):
   print "\n========== RESULTS =========="
   
   print "Number of colors used: " + str(int(n))
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     print "Usage: \"python NRGC.py sizeOfPath\""
   else:
     size = int(sys.argv[1])
-    displayResults(*solve(size, size, generatePaths(size)))
+    displayResults(*solve(size, 3, generatePaths(size))) #The three here come from a result of Thue
