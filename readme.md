@@ -7,13 +7,13 @@ This repository will contain all the Python code that I'm writting for my semest
 Below you will find a description of each executable piece of code. When a program requires a graph file, it uses the encoding provided by **EasyGraph** which you can find in one of my other repository.
 
 ##Computation of π(G)
-generalNRGC.py computes the Thue number of any graph and also yields the proper coloring. Note that it may take quite a long time.
+generalNRGC.py computes the Thue number of any graph and also yields the proper coloring. Note that it may take quite a long time. If you want to color edges (Thue index), append "edge" at the end of the command
 
-**Usage**: `python generalNRGC.py graphfile`
+**Usage**: `python generalNRGC.py graphfile (edge)`
 
 **Requirements**: Gurobi, Networkx
 
-##Fast lower bound on π(T(n))
+##(Fast) lower bound on π(T(n))
 The multigrid of dimension n is a grid of size n x n where every row and column is also a clique of size n. multigridsNRGC.py computes the minimum number of color to provide a proper non-repetitive coloring by only considering paths up to length lim. If you want to consider all paths, put lim = n^2.
 
 **Usage**: `python multigridNRGC.py n lim`
