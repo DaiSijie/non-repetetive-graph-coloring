@@ -73,6 +73,7 @@ def verifyConjecture(rawInput, size):
 
   #compute the thue index of T
   (feasible, n, ass) = solveForEdges(E, len(E), treePaths(size, E)) #ToDo: improve lower bound for the number of colors
+  print "n = "+str(n)
 
   #try to color the line graph with n + 1 colors
   (sizel, El) = lineGraph(size, E)
