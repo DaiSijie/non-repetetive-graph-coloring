@@ -27,6 +27,12 @@ treeNRGC.py test the above conjecture for all trees located in a folder f. The f
 
 **Requirements**: Gurobi, Networkx
 
+##Computation of π'(T) and π(T) for complete binary trees
+binarytreeNRGC.py computes the Thue number and index of the complete binary tree of level l.
+
+**Usage**: `python binarytreeNRGC.py l`
+
+**Requirements**: Gurobi, Networkx
 
 ##Computation of π(P_n)
 pathNRGC.py computes the Thue number of a path of length l and also yields the proper coloring. Note that due to Thue, the number of colors used should always be 3.
