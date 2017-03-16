@@ -75,5 +75,5 @@ if __name__ == '__main__':
     E = buildMultigrid(dim)
     paths = allPaths(dim * dim, E, lim)
 
-    (feasible, n, assignment) = solve(dim * dim, dim * dim, paths)
+    (feasible, n, assignment) = solve(dim * dim, 22, paths)
     print "pi_"+str(lim)+"(M_"+str(dim)+") = "+str(n)
