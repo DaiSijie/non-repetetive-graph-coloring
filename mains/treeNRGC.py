@@ -14,6 +14,12 @@ from gurobipy import *
 treeAnalyzed = 0
 caterpillar = 0
 
+#hard-coded user constants
+caterpillarON = True
+maxCliqueON = True
+luckyPunchON = True
+
+
 #Comment: this method is approximatively two times faster than networkx and ten times faster than the naive
 def treePaths(size, E):
   toReturn = []
@@ -45,6 +51,7 @@ def lineGraph(size, E, largestEdgeClique = set()):
   #First, we convert each edge to a number
   sizel = 0
   bckmap = dict()
+  fwdmap = dict()
   for e in E:
     if e in largestEdgeClique:
       largestClique.add(sizel)
@@ -52,6 +59,7 @@ def lineGraph(size, E, largestEdgeClique = set()):
     a = max(l[0], l[1])
     b = min(l[0], l[1])
     bckmap[sizel] = (a, b)
+    fwdmap[(a,b)] = sizel
     sizel = sizel + 1
 
   #Now, we build the new edge set:
@@ -63,7 +71,18 @@ def lineGraph(size, E, largestEdgeClique = set()):
       if a1 == b1 or a1 == b2 or a2 == b1 or a2 == b2:
         El.add(frozenset([i, j]))
 
-  return (sizel, El, largestClique)
+  return (sizel, El, largestClique, fwdmap)
+
+def isFeasible(paths, assignment):
+  for p in paths:
+    length = len(p)
+    if length % 2 == 0:
+      noDiff = True
+      for i in xrange(length/2):
+        noDiff = noDiff and assignment[p[i]] == assignment[p[i + length/2]] 
+      if noDiff:
+        return False
+  return True      
 
 def fromTreeFlow(rawInput, size):
   global treeAnalyzed
@@ -100,35 +119,60 @@ def fromTreeFlow(rawInput, size):
 
   treeAnalyzed += 1
 
-  #Check for caterpillar:
-  #They are the trees in which every vertex of degree at least three has at most two non-leaf neighbors.
-  for i in xrange(size):
-    if degrees[i] >= 3:
-      count = 0 #count non-leaf neighbors. v is non-leaf iff it has degree >= 2
-      for n in neighbors[i]:
-        if degrees[n] >= 2:
-          count += 1
-      if count > 2:
-        return (E, False, max(degrees))
-  
-  caterpillar += 1
-  return (E, True, max(degrees), largestEdgeClique)
+  if caterpillarON:
+    #Check for caterpillar:
+    #They are the trees in which every vertex of degree at least three has at most two non-leaf neighbors.
+    for i in xrange(size):
+      if degrees[i] >= 3:
+        count = 0 #count non-leaf neighbors. v is non-leaf iff it has degree >= 2
+        for n in neighbors[i]:
+          if degrees[n] >= 2:
+            count += 1
+        if count > 2:
+          return (E, False, max(degrees), largestEdgeClique)
+    caterpillar += 1
+    return (E, True, max(degrees), largestEdgeClique)
+  else:
+    return (E, False, max(degrees), largestEdgeClique)
 
 def verifyConjecture(rawInput, size):
 
   (E, isCaterpillar, maxDegree, largestEdgeClique) = fromTreeFlow(rawInput, size)
 
-  if isCaterpillar:
+  if caterpillarON and isCaterpillar:
     return True
 
   upperBound = min(4 * maxDegree - 4, len(E))
 
   #compute the thue index of T
-  (feasible, n, ass) = solveForEdges(E, upperBound, treePaths(size, E), largestEdgeClique)
+  (feasible, n, ass) = solveForEdges(E, upperBound, treePaths(size, E), largestEdgeClique) if maxCliqueON else solveForEdges(E, upperBound, treePaths(size, E))
 
   #try to color the line graph with n + 1 colors
-  (sizel, El, largestClique) = lineGraph(size, E, largestEdgeClique)
-  (feasible2, n2, ass2) = solve(sizel, n + 1, allPaths(sizel, El), largestClique)
+  (sizel, El, largestClique, fwdmap) = lineGraph(size, E, largestEdgeClique) if maxCliqueON else lineGraph(size, E)
+  paths = allPaths(sizel, El)
+
+  if luckyPunchON:
+    #try to build lucky edge coloring:
+    for e in E:
+      luckyPunch = [0] * len(E)
+      for ee in E:
+        l = list(ee)
+        a = max(l[0], l[1])
+        b = min(l[0], l[1])
+        if ee == e:
+          luckyPunch[fwdmap[(a, b)]] = 999 #The special color
+        else:
+          for ((aa,bb), c) in ass:
+            if a == aa and b == bb:
+              luckyPunch[fwdmap[(a, b)]] = c
+              break
+            if isFeasible(paths, luckyPunch):
+              return True
+
+    #If no lucky punch worked, go the classical way
+    print "\n\n NO LUCKY PUNCH WORKED! \n\n"
+  
+  (feasible2, n2, ass2) = solve(sizel, n + 1, paths, largestClique)
 
   return feasible2
 
@@ -138,6 +182,13 @@ if __name__ == '__main__':
     print "Usage: \"python treeNRGC.py folername\""
   else:
     folderName = sys.argv[1]
+    
+    print "============= SETTINGS =============="
+    print "maxCliqueON:   " + str(maxCliqueON)
+    print "caterpillarON: " + str(caterpillarON)
+    print "luckyPunchON:  " + str(luckyPunchON)
+    print "====================================="
+
     globaly = True
     start = time.time()
     
