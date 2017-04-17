@@ -6,44 +6,7 @@ sys.path.insert(0, parentdir)
 
 from helpers.solver import solve
 
-def allPaths(n, E, lim):
-  if lim % 2 == 1:
-    lim = lim-1
-
-  paths = []
-  for v1 in xrange(n):
-    for v2 in xrange(v1 + 1, n):
-      for path in allSTPaths(n, E, v1, v2, lim):
-        if len(path) % 2 == 0:
-          paths.append(path)
-
-  return paths
-
-def allSTPaths(n, E, s, t, lim):
-	V = set(list(xrange(n)))
-	V.remove(s)
-	paths = rAllSTPaths(V, E, s, t, lim-1)
-	for path in paths:
-		path.append(s)
-	return paths
-
-def rAllSTPaths(V, E, s, t, remaining):
-  toReturn = []
-  if remaining == 0:
-    return toReturn
-  for v in V:
-  	if {s, v} in E: #If we can move from s to the particular v
-  		if v == t: #If we arrived at destination, we're good
-  			toReturn.append([t])
-  		else:
-  			#prepare new graph
-  			V2 = V.copy()
-  			V2.remove(v)
-  			paths = rAllSTPaths(V2, E, v, t, remaining-1)
-  			for path in paths:
-  				path.append(v)
-  				toReturn.append(path)
-  return toReturn
+import networkx as nx
 
 def buildMultigrid(dim):
   E = set()
@@ -62,6 +25,44 @@ def buildMultigrid(dim):
 
   return E
 
+def isSeparate(path, dim):
+  bag1 = set()
+  bag2 = set()
+
+  l = len(path) / 2
+  for i in xrange(1, l-1):
+    e = path[i]
+    column = e % dim + dim
+    row = e // dim
+    bag1.add(column)
+    bag1.add(row)
+
+  for i in xrange(1, l-1):
+    e = path[i + l]
+    column = e % dim + dim
+    row = e // dim
+    bag2.add(column)
+    bag2.add(row)
+
+  isSeparate = len(bag1.intersection(bag2)) == 0
+
+  return isSeparate
+
+def allPaths(n, E, dim, cutoff = None):
+  G = nx.Graph()
+  G.add_nodes_from(xrange(n))
+  for e in E:
+    ee = list(e)
+    G.add_edge(ee[0], ee[1])
+
+  paths = []
+  for v1 in xrange(n):
+    for v2 in xrange(v1 + 1, n):
+      for p in nx.all_simple_paths(G, v1, v2, cutoff):
+        if len(p) % 2 == 0 and isSeparate(p, dim):
+          paths.append(p)
+  return paths
+
 def cord2int(x, y, dim):
   return dim * x + y
 
@@ -73,7 +74,18 @@ if __name__ == '__main__':
     lim = int(sys.argv[2])
 
     E = buildMultigrid(dim)
-    paths = allPaths(dim * dim, E, lim)
+    paths = allPaths(dim * dim, E, dim, lim)
 
-    (feasible, n, assignment) = solve(dim * dim, 22, paths)
+    print "path done!"
+
+    clique = set()
+    for i in xrange(dim):
+      clique.add(cord2int(i, 0, dim))
+
+    (feasible, n, assignment) = solve(dim * dim, 16, paths, clique)
+
+
+
+    print "model solved"
+
     print "pi_"+str(lim)+"(M_"+str(dim)+") = "+str(n)

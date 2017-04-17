@@ -1,7 +1,7 @@
 import sys
 import networkx as nx
 
-def allPaths(n, E):
+def allPaths(n, E, cutoff = None):
   G = nx.Graph()
   G.add_nodes_from(xrange(n))
   for e in E:
@@ -11,7 +11,7 @@ def allPaths(n, E):
   paths = []
   for v1 in xrange(n):
     for v2 in xrange(v1 + 1, n):
-      for p in nx.all_simple_paths(G, v1, v2):
+      for p in nx.all_simple_paths(G, v1, v2, cutoff):
         paths.append(p)
   return paths
 

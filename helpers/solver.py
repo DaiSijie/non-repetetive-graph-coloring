@@ -71,13 +71,6 @@ def solve(size, number_of_colors, paths, biggestClique = set()):
       X_c.append(m.addVar(vtype = GRB.BINARY))
     X.append(X_c)
 
-  #Fill hints
-  counter = 0
-  for v in biggestClique:
-    for c in xrange(number_of_colors):
-      X[c][v].start = 1 if c == counter else 0
-    counter += 1
-
   for i in xrange(size):
     ins = []
     for j in xrange(size):
@@ -90,6 +83,13 @@ def solve(size, number_of_colors, paths, biggestClique = set()):
       Z[v1][v2] = m.addVar(vtype = GRB.INTEGER)
 
   m.update()
+
+  #Fill hints
+  counter = 0
+  for v in biggestClique:
+    for c in xrange(number_of_colors):
+      m.addConstr(X[c][v] == (1 if c == counter else 0))
+    counter += 1
 
   #First, make sure that every vertex has exactly one color:
   for v in xrange(size):

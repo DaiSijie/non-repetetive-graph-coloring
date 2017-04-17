@@ -19,7 +19,6 @@ caterpillarON = True
 maxCliqueON = True
 luckyPunchON = True
 
-
 #Comment: this method is approximatively two times faster than networkx and ten times faster than the naive
 def treePaths(size, E):
   toReturn = []
@@ -170,7 +169,7 @@ def verifyConjecture(rawInput, size):
               return True
 
     #If no lucky punch worked, go the classical way
-    print "\n\n NO LUCKY PUNCH WORKED! \n\n"
+    #print "\n\n NO LUCKY PUNCH WORKED! \n\n"
   
   (feasible2, n2, ass2) = solve(sizel, n + 1, paths, largestClique)
 
