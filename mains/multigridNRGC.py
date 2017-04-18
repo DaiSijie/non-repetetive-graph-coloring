@@ -5,6 +5,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
 from helpers.solver import solve
+from helpers.SeparatePathsFinder import SeparatePathsFinder
 
 import networkx as nx
 
@@ -74,7 +75,16 @@ if __name__ == '__main__':
     lim = int(sys.argv[2])
 
     E = buildMultigrid(dim)
-    paths = allPaths(dim * dim, E, dim, lim)
+    
+    s = SeparatePathsFinder(dim * dim, E)
+    paths = list()
+    c = s.next()
+    while len(c) > 0:
+      if len(c[0]) <= lim:
+        paths.extend(c)
+        c = s.next()
+      else:
+        c = list()
 
     print "path done!"
 
@@ -82,7 +92,7 @@ if __name__ == '__main__':
     for i in xrange(dim):
       clique.add(cord2int(i, 0, dim))
 
-    (feasible, n, assignment) = solve(dim * dim, 16, paths, clique)
+    (feasible, n, assignment) = solve(dim * dim, dim * dim, paths, clique)
 
 
 

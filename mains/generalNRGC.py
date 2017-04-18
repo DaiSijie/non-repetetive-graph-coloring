@@ -4,9 +4,10 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
-from helpers.solver import solve
+from helpers.optSolver import solve
 from helpers.solver import solveForEdges
 from helpers.paths import allPaths
+from helpers.SeparatePathsFinder import SeparatePathsFinder
 from gurobipy import *
 
 def displayEdgeResults(n, assignment, backwardMap):
@@ -65,6 +66,6 @@ if __name__ == '__main__':
       (feasible, n, ass) = solveForEdges(E, len(E), allPaths(size, E)) #ToDo: improve lower bound for the number of colors
       displayEdgeResults(n, ass, backwardMap)
     else:
-      (feasible, colors, assignment) = solve(size, size, allPaths(size, E))
+      (feasible, colors, assignment) = solve(size, size, SeparatePathsFinder(size, E))
       displayResults(feasible, colors, assignment, backwardMap)
 

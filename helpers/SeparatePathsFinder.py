@@ -45,7 +45,7 @@ class SeparatePathsFinder():
 
 		leftNeighbors = list()
 		rightNeighbors = list()
-		while len(self.queue) > 0 and len(self.queue[0]) == target:
+		while len(self.queue) > 0 and len(self.queue[len(self.queue) -1 ]) == target:
 			current = self.queue.pop()
 			l = len(current)
 			left = current[0]
@@ -64,7 +64,7 @@ class SeparatePathsFinder():
 						new.append(b)
 						toReturn.append(new)
 						if a not in self.neighbors[b]: #Goes to next stage
-							self.queue.append(new)
+							self.queue.appendleft(new)
 
 			del leftNeighbors[:]
 			del rightNeighbors[:]

@@ -9,6 +9,7 @@ sys.path.insert(0, parentdir)
 from helpers.solver import solve
 from helpers.solver import solveForEdges
 from helpers.paths import allPaths
+from helpers.SeparatePathsFinder import SeparatePathsFinder
 from gurobipy import *
 
 treeAnalyzed = 0
@@ -148,7 +149,9 @@ def verifyConjecture(rawInput, size):
 
   #try to color the line graph with n + 1 colors
   (sizel, El, largestClique, fwdmap) = lineGraph(size, E, largestEdgeClique) if maxCliqueON else lineGraph(size, E)
-  paths = allPaths(sizel, El)
+  
+  suuu = SeparatePathsFinder(sizel, El)
+  paths = suuu.popEverything()
 
   if luckyPunchON:
     #try to build lucky edge coloring:
