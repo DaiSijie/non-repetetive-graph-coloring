@@ -54,24 +54,49 @@ def fromEasyGraphFlow(rawInput):
 
   return (size, E, forwardMap, backwardMap)
 
+def buildMultigrid(dim):
+  E = set()
+
+  #row connections:
+  for row in xrange(dim):
+    for i in xrange(dim):
+      for j in xrange(i + 1, dim):
+        E.add(frozenset([cord2int(row, i, dim), cord2int(row, j, dim)]))
+
+  #line connections:
+  for line in xrange(dim):
+    for i in xrange(dim):
+      for j in xrange(i + 1, dim):
+        E.add(frozenset([cord2int(i, line, dim), cord2int(j, line, dim)]))
+
+  return E
+
+def cord2int(x, y, dim):
+  return dim * x + y
+
+
 if __name__ == '__main__':
   if len(sys.argv) < 2:
     print "Usage: \"python separatePathsTest.py graphFile\""
   else:
     f = open(sys.argv[1])
-    (size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
+    #(size, E, forwardMap, backwardMap) = fromEasyGraphFlow(f.read())
     
+    size = 5
+    E = buildMultigrid(size)
+
+
     t1 = time.time()
-    s = SeparatePathsFinder(size, E)
+    s = SeparatePathsFinder(size * size, E)
     r1 = s.popEverything()
     t2 = time.time()
-    r2 = naiveAllSeparatePaths(size, E)
+    #r2 = naiveAllSeparatePaths(size * size, E)
     t3 = time.time()
 
     print "Optimized time: " + str((t2 - t1)*1000)
     print "Naive time: " + str((t3 - t2)*1000)
 
-    print r1
-    print r2
+    print "# of paths: "+ str(len(r1))
+    #print r2
 
-    print "Same number of paths: " + str(len(r1) == len(r2))
+    #print "Same number of paths: " + str(len(r1) == len(r2))

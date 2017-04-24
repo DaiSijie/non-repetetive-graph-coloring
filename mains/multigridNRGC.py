@@ -1,4 +1,4 @@
-import os, sys, inspect
+import os, sys, inspect, time
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -88,14 +88,20 @@ if __name__ == '__main__':
 
     print "path done!"
 
+
+
+
     clique = set()
     for i in xrange(dim):
       clique.add(cord2int(i, 0, dim))
 
+    t1 = time.time()
+
+
     (feasible, n, assignment) = solve(dim * dim, dim * dim, paths, clique)
 
+    t2 = time.time()
 
-
-    print "model solved"
+    print "model solved, time: " + str((t2 - t1))
 
     print "pi_"+str(lim)+"(M_"+str(dim)+") = "+str(n)

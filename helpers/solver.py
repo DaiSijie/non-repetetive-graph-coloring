@@ -43,9 +43,8 @@ def translate(path, fwdmap):
 
 def solve(size, number_of_colors, paths, biggestClique = set()):
   m = Model()
-  m.setParam( 'OutputFlag', False )
+  #m.setParam( 'OutputFlag', False)
   #m.setParam('LazyConstraints', 1)
-
   #m.params.LazyConstraints = 1
 
   Y = [] #Y_color
@@ -71,6 +70,28 @@ def solve(size, number_of_colors, paths, biggestClique = set()):
       Z[v1][v2] = m.addVar(vtype = GRB.INTEGER)
 
   m.update()
+
+
+  #fill hints
+  #counter = 0
+  #for v in xrange(size):
+  #  if v in biggestClique: 
+  #    for c in xrange(number_of_colors):
+  #      m.addConstr(X[c][v] == (1 if c == counter else 0))
+  #      X[c][v].setAttr('Start', (1 if c == counter else 0))
+  #    counter += 1
+  #  elif size == number_of_colors:
+  #    print "Hellooooo!"
+  #    for c in xrange(number_of_colors):
+  #      X[c][v].setAttr('Start', (1 if c == counter else 0))
+  #    counter += 1
+
+  #for v1 in xrange(size):
+  #  for v2 in xrange(v1 + 1, size):
+  #    Z[v1][v2].setAttr('Start', 1)
+
+  #for c in xrange(number_of_colors):
+  #  Y[c].setAttr('Start', 1) 
 
   #Fill hints
   counter = 0

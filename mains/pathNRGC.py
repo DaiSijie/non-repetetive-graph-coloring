@@ -12,10 +12,14 @@ def displayResults(feasible, n, assignment):
   
   print "Number of colors used: " + str(int(n))
   
+  yeh = ""
   for v in xrange(len(assignment)):
     print "Vertex "+str(v)+": "+str(assignment[v])
-
+    yeh = yeh + str(assignment[v])
+  
   print "============================="
+  print yeh
+
 
 def generatePaths(size):
   paths = []

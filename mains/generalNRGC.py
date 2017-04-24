@@ -4,7 +4,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
-from helpers.optSolver import solve
+from helpers.solver import solve
 from helpers.solver import solveForEdges
 from helpers.paths import allPaths
 from helpers.SeparatePathsFinder import SeparatePathsFinder
