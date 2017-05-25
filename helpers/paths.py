@@ -1,5 +1,5 @@
 import sys
-import networkx as nx
+#import networkx as nx
 
 def allPaths(n, E, cutoff = None):
   G = nx.Graph()
