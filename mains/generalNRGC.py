@@ -1,4 +1,4 @@
-import os, sys, inspect
+import os, sys, inspect, time
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -7,6 +7,7 @@ sys.path.insert(0, parentdir)
 from helpers.solver import solve
 from helpers.solver import solveForEdges
 from helpers.paths import allPaths
+from helpers.maximalClique import findMaximalClique
 from helpers.SeparatePathsFinder import SeparatePathsFinder
 from gurobipy import *
 
@@ -21,9 +22,9 @@ def displayEdgeResults(n, assignment, backwardMap):
   print "============================="
 
 
-def displayResults(feasible, nOfColors, assignment, backwardMap):
+def displayResults(feasible, nOfColors, assignment, backwardMap, timee):
   print "\n========== RESULTS =========="
-  
+  print "Computation time: " + str(timee) + "s"
   if not feasible:
     print "Model is infeasible"
   else:
@@ -66,6 +67,13 @@ if __name__ == '__main__':
       (feasible, n, ass) = solveForEdges(E, len(E), allPaths(size, E)) #ToDo: improve lower bound for the number of colors
       displayEdgeResults(n, ass, backwardMap)
     else:
-      (feasible, colors, assignment) = solve(size, size, SeparatePathsFinder(size, E))
-      displayResults(feasible, colors, assignment, backwardMap)
+      t1 = time.time()
+      s = SeparatePathsFinder(size, E)
+      ta = time.time()
+      clique = findMaximalClique(size, E, 1)
+      tb = time.time()
+      print "tt = " + str(tb-t1)
+      (feasible, colors, assignment) = solve(size, size, s.popEverything(), clique)
+      t2 = time.time()
+      displayResults(feasible, colors, assignment, backwardMap, t2 - t1)
 

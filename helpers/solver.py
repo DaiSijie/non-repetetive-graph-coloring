@@ -43,7 +43,7 @@ def translate(path, fwdmap):
 
 def solve(size, number_of_colors, paths, biggestClique = set()):
   m = Model()
-  #m.setParam( 'OutputFlag', False)
+  m.setParam('OutputFlag', False)
   #m.setParam('LazyConstraints', 1)
   #m.params.LazyConstraints = 1
 
