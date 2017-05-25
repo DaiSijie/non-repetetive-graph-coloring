@@ -1,6 +1,7 @@
 import os, sys, inspect
 import Queue
 from time import gmtime, strftime
+import time
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -192,10 +193,10 @@ if __name__ == '__main__':
     offsetFile = int(sys.argv[2] if len(sys.argv) > 3 else 0)
     offsetLine = int(sys.argv[3] if len(sys.argv) > 3 else 0)
     folderName = sys.argv[1]
-    printToLog(folderName, "Started running in " + foldername + " at file " + str(offsetFile) + " and line " + str(offsetLine))
+    printToLog(folderName, "Started running in " + folderName + " at file " + str(offsetFile) + " and line " + str(offsetLine))
     
     print "============= SETTINGS =============="
-    print "maxCliqueON:   " + str(maxCliqueON))
+    print "maxCliqueON:   " + str(maxCliqueON)
     print "caterpillarON: " + str(caterpillarON)
     print "luckyPunchON:  " + str(luckyPunchON)
     print "====================================="
@@ -205,12 +206,12 @@ if __name__ == '__main__':
     fileCounter = -1
 
     for name in os.listdir(folderName):
-      if name[0] == ".":
+      if name[0] == "." or name == "cluster.log":
         continue #mac messes up with DS_STOREs
 
       #check if file was already tested
       fileCounter += 1
-      if fileCounter < offsetFile
+      if fileCounter < offsetFile:
         continue
 
       #retrieve info of file
@@ -220,16 +221,22 @@ if __name__ == '__main__':
       name = name.split(".")
       size = int(name[0])
       radius = int(name[1])
-      printToLog(folderName, "Start testing for file offset " + str(offsetFile) + " size = " + str(size) + " radius = " + str(radius))
+      printToLog(folderName, "Start testing for file with size = " + str(size) + " radius = " + str(radius))
 
       lines = [line.rstrip('\n') for line in open(path)]
       holds = True
       counter = 1
       for l in lines:
-        if counter < offsetLine
+        if counter < offsetLine:
+          counter += 1
+          continue
+        if counter % 100 == 0:
+          printToLog(folderName, "100 trees tested, counter = " + str(counter) + " holds? " + str(globaly))
         sys.stdout.write("\rTesting tree of size " + str(size) + " and radius " + str(radius) + ": " + str(counter) + "/" + str(len(lines)))
         sys.stdout.flush()
         holds = holds and verifyConjecture(l, size)
+        if not holds:
+          printToLog(folderName, " !!! CONJECTURE FALSE !!! at counter: " + str(counter))
         counter = counter + 1
 
       sys.stdout.write("\rTesting tree of size " + str(size) + " and radius " + str(radius) + ": conjecture is " + str(holds))
@@ -246,5 +253,8 @@ if __name__ == '__main__':
     print "Caterpillar found: " + str(caterpillar)
     print "Time used:         " + str(end - start)
     print "====================================="
+
+    printToLog(folderName, "Done for this size. Results:\n============== RESULTS ==============\nConjecture holds:  " + str(globaly) +"\n " + "Tree analyzed:     " + str(treeAnalyzed)+" \n" + "Caterpillar found: " + str(caterpillar) + "\n" + "Time used:         " + str(end - start) + "\n" + "=====================================")
+
 
 
