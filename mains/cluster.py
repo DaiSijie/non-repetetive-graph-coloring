@@ -1,5 +1,5 @@
 import os, sys, inspect
-import Queue
+#from collections import deque
 from time import gmtime, strftime
 import time
 
@@ -22,29 +22,29 @@ maxCliqueON = True
 luckyPunchON = True
 
 #Comment: this method is approximatively two times faster than networkx and ten times faster than the naive
-def treePaths(size, E):
-  toReturn = []
-  for s in xrange(size - 1): #Last vertex will have been covered by everything
-    toReturn.extend(treePathsFromS(size, E, s))
-  return toReturn
+#def treePaths(size, E):
+#  toReturn = []
+#  for s in xrange(size - 1): #Last vertex will have been covered by everything
+#    toReturn.extend(treePathsFromS(size, E, s))
+#  return toReturn
 
 #Should only returns paths to vertex > s
-def treePathsFromS(size, E, s):
-  toReturn = []
-  visited = set()
-  toVisit = Queue.Queue()
-  toVisit.put((s, [s]))
-  while not toVisit.empty():
-    (visiting, how) = toVisit.get()
-    visited.add(visiting)
-    for n in xrange(size):
-      if n not in visited and {visiting, n} in E:
-        nhow = list(how)
-        nhow.append(n)
-        toVisit.put((n, nhow))
-        if s < n and len(nhow) % 2 == 1:
-          toReturn.append(nhow)
-  return toReturn
+#def treePathsFromS(size, E, s):
+#  toReturn = []
+#  visited = set()
+#  toVisit = Queue.Queue()
+#  toVisit.put((s, [s]))
+#  while not toVisit.empty():
+#    (visiting, how) = toVisit.get()
+#    visited.add(visiting)
+#    for n in xrange(size):
+#      if n not in visited and {visiting, n} in E:
+#        nhow = list(how)
+#        nhow.append(n)
+#        toVisit.put((n, nhow))
+#        if s < n and len(nhow) % 2 == 1:
+#          toReturn.append(nhow)
+#  return toReturn
 
 def lineGraph(size, E, largestEdgeClique = set()):
   largestClique = set()
@@ -146,7 +146,8 @@ def verifyConjecture(rawInput, size):
   upperBound = min(4 * maxDegree - 4, len(E))
 
   #compute the thue index of T
-  (feasible, n, ass) = solveForEdges(E, upperBound, treePaths(size, E), largestEdgeClique) if maxCliqueON else solveForEdges(E, upperBound, treePaths(size, E))
+  s = SeparatePathsFinder(size, E)
+  (feasible, n, ass) = solveForEdges(E, upperBound, s.popEverything(), largestEdgeClique) if maxCliqueON else solveForEdges(E, upperBound, s.popEverything)
 
   #try to color the line graph with n + 1 colors
   (sizel, El, largestClique, fwdmap) = lineGraph(size, E, largestEdgeClique) if maxCliqueON else lineGraph(size, E)
@@ -181,38 +182,39 @@ def verifyConjecture(rawInput, size):
 
 
 def printToLog(where, s):
-  f = open(where + "/cluster.log", "aw+")
+  f = None
+  try:
+    f = open(where + "/cluster.log", "a+")
+  except IOError:
+    f = open(where + "/cluster.log", "w")
   date = strftime("%d %b %Y %H:%M:%S", gmtime())
   f.write(date + "] " + s + "\n")
   f.close()
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:
-    print "Usage: \"python treeNRGC.py foldername\""
+    print("Usage: \"python treeNRGC.py foldername\"")
   else:
     offsetFile = int(sys.argv[2] if len(sys.argv) > 3 else 0)
     offsetLine = int(sys.argv[3] if len(sys.argv) > 3 else 0)
     folderName = sys.argv[1]
     printToLog(folderName, "Started running in " + folderName + " at file " + str(offsetFile) + " and line " + str(offsetLine))
+    printToLog(folderName, "============= SETTINGS ==============" + "\n" + "maxCliqueON:   " + str(maxCliqueON) + "\n" + "caterpillarON: " + str(caterpillarON) + "\n" + "luckyPunchON:  " + str(luckyPunchON) + "\n" + "=====================================")
     
-    print "============= SETTINGS =============="
-    print "maxCliqueON:   " + str(maxCliqueON)
-    print "caterpillarON: " + str(caterpillarON)
-    print "luckyPunchON:  " + str(luckyPunchON)
-    print "====================================="
+    print("============= SETTINGS ==============")
+    print("maxCliqueON:   " + str(maxCliqueON))
+    print("caterpillarON: " + str(caterpillarON))
+    print("luckyPunchON:  " + str(luckyPunchON))
+    print("=====================================")
 
     globaly = True
     start = time.time()
     fileCounter = -1
-
     for name in os.listdir(folderName):
       if name[0] == "." or name == "cluster.log":
         continue #mac messes up with DS_STOREs
 
-      #check if file was already tested
-      fileCounter += 1
-      if fileCounter < offsetFile:
-        continue
+
 
       #retrieve info of file
       path = folderName + "/" + name
@@ -221,6 +223,12 @@ if __name__ == '__main__':
       name = name.split(".")
       size = int(name[0])
       radius = int(name[1])
+
+      #check if file was already tested
+      if radius != offsetFile:
+        continue
+
+
       printToLog(folderName, "Start testing for file with size = " + str(size) + " radius = " + str(radius))
 
       lines = [line.rstrip('\n') for line in open(path)]
@@ -230,6 +238,8 @@ if __name__ == '__main__':
         if counter < offsetLine:
           counter += 1
           continue
+        if counter > offsetLine + 200000:
+          break
         if counter % 100 == 0:
           printToLog(folderName, "100 trees tested, counter = " + str(counter) + " holds? " + str(globaly))
         sys.stdout.write("\rTesting tree of size " + str(size) + " and radius " + str(radius) + ": " + str(counter) + "/" + str(len(lines)))
@@ -241,20 +251,20 @@ if __name__ == '__main__':
 
       sys.stdout.write("\rTesting tree of size " + str(size) + " and radius " + str(radius) + ": conjecture is " + str(holds))
       sys.stdout.flush()
-      print ""
+      print("")
 
       globaly = globaly and holds
 
     end = time.time()
 
-    print "============== RESULTS =============="
-    print "Conjecture holds:  " + str(globaly)
-    print "Tree analyzed:     " + str(treeAnalyzed)
-    print "Caterpillar found: " + str(caterpillar)
-    print "Time used:         " + str(end - start)
-    print "====================================="
+    print("============== RESULTS ==============")
+    print("Conjecture holds:  " + str(globaly))
+    print("Tree analyzed:     " + str(treeAnalyzed))
+    print("Caterpillar found: " + str(caterpillar))
+    print("Time used:         " + str(end - start))
+    print("=====================================")
 
-    printToLog(folderName, "Done for this size. Results:\n============== RESULTS ==============\nConjecture holds:  " + str(globaly) +"\n " + "Tree analyzed:     " + str(treeAnalyzed)+" \n" + "Caterpillar found: " + str(caterpillar) + "\n" + "Time used:         " + str(end - start) + "\n" + "=====================================")
+    printToLog(folderName, "Done for this size. Results:\n============== RESULTS ==============\nConjecture holds:  " + str(globaly) +"\n" + "Tree analyzed:     " + str(treeAnalyzed)+" \n" + "Caterpillar found: " + str(caterpillar) + "\n" + "Time used:         " + str(end - start) + "\n" + "=====================================")
 
 
 
