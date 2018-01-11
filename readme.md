@@ -4,7 +4,7 @@ Non-repetitive graph coloring is a generalization of regular graph coloring. In 
 
 This repository will contain all the Python code that I'm writting for my semester project at EPFL for the DISOPT lab. It mainly contains small snippets to test hypotheses. Since this problem is very hard (it lies in NP^NP), the problem is translated to an integer program and you will need a working copy of Gurobi (free academic license available!) to execute the code.
 
-You can use it to black-box compute the Thue number/index of any graph (and also retrieve the colors).
+You can use it to black-box compute the Thue number/index of any graph (and also retrieve the coloring).
 
 Below you will find a description of each script of interest. When a program requires a graph file, it uses the encoding provided by **EasyGraph** which you can find in one of my other repository. You can find example of graphs in the 'example' folder.
 
@@ -22,7 +22,7 @@ The multigrid of dimension n is a grid of size n x n where every row and column 
 
 **Requirements**: Gurobi
 
-## Verification of the π(L(T)) ≤ π'(T) conjecture for some trees
+## Verification of the π(L(T)) - π'(T) ≤ 1 conjecture for some trees
 treeNRGC.py test the above conjecture for all trees located in a folder f. The files containing the trees should be the one available on http://users.cecs.anu.edu.au/~bdm/data/trees.html. Script also available in "cluster" mode with log file and recovery options.
 
 **Usage**: `python treeNRGC.py f`
